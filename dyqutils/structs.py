@@ -1,9 +1,9 @@
-from t import ListNode, Node
-from typing import Union
-from pyecharts.charts import Page
-from pyecharts.charts import Tree
+print(__package__)
+__package__ = "dyqutils"
+from .t import ListNode, Node
+from typing import Union, Generator
+from pyecharts.charts import Page, Tree, Graph
 from pyecharts import options as opts
-
 
 def generate_nodes(n: Union[int,list]):
     '''generate tree by list or range(n)'''
@@ -21,6 +21,35 @@ def print_nodes(head:ListNode):
         print(f'{head=}')
         head = head.next
 
+def linked_to_list(node:ListNode):
+    while node:
+        yield node
+        node = node.next
+
+def nodes_render(nodes:list[list[Node]], fname='render_nodes.html'):
+    def generate_graph():
+        for line in nodes:
+            last_node = None
+            for node in line[::-1]:
+                t = {
+                    "name":"",
+                    "children":[]
+                }
+                t['name'] = str(node.val)
+                if last_node:
+                    t['children'].append(last_node)
+                last_node = t
+            c = Tree().add(
+                    series_name="tree",
+                    data=[last_node],
+                    orient="LR",
+                    initial_tree_depth=20,
+                    label_opts=opts.LabelOpts(),
+                    leaves_label_opts=opts.LabelOpts(),
+                )
+            yield c
+    Page(layout=Page.SimplePageLayout).add(*list(generate_graph())).render(fname)
+
 def generate_tree(n:list):
     '''通过数组生成一颗二叉树'''
     nodes = [Node(i) for i in n]
@@ -37,7 +66,6 @@ def print_tree(root:Node):
             "name":"",
             "children":[]
         }
-        # import pdb; pdb.set_trace()
         t['name'] = root.val
         if root.left:
             t["children"].append(traverse(root.left))
@@ -55,14 +83,13 @@ def generate_echarts_data(root:Node):
             "name":"",
             "children":[]
         }
-        t['name'] = root.val
-        if root.left and root.left.val is not None:
+        t['name'] = str(root.val)
+        if root.left:
             t["children"].append(traverse(root.left))
-        if root.right and root.right.val is not None:
+        if root.right:
             t['children'].append(traverse(root.right))
         return t
     res = traverse(root)
-    print(res)
     return [res]
 
 def tree_render(roots=list[Node], fname='render.html'):
@@ -83,9 +110,11 @@ def tree_render(roots=list[Node], fname='render.html'):
 
 if __name__ == "__main__":
     print_nodes(generate_nodes(6))
-    print_nodes(generate_nodes([1,3,4,5,6,7]))
+    print_nodes(generate_nodes([1,2,3]))
+    nodes = [[ListNode(i) for i in range(5)], list(linked_to_list(generate_nodes(8)))]
+    nodes_render(nodes)
     print('---------------')
     root = generate_tree([1,2,3,4,5,6])
     print_tree(root)
-    root = generate_tree([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15])
+    root = generate_tree([1,2,3,4,5,6,7,8,9,10,11,None,13,14,15])
     tree_render([root])
