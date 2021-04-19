@@ -6,14 +6,13 @@ class Node:
     left = None
     right = None
 
+@dataclass
 class ListNode:
-    def __init__(self, val=0, next=None):
-        self.val = val
-        self.next = next
+    val:int
+    next = None
     
     def __str__(self):
-        return f'Node[{self.val=}, {self.next.val if self.next else None}]'
+        return f'Node[{self.val=}, next:{self.next.val if self.next else None}]'
     
     def __repr__(self):
         return self.__str__()
-

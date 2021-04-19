@@ -1,9 +1,8 @@
-print(__package__)
-__package__ = "dyqutils"
 from .t import ListNode, Node
 from typing import Union, Generator
 from pyecharts.charts import Page, Tree, Graph
 from pyecharts import options as opts
+from rich import print
 
 def generate_nodes(n: Union[int,list]):
     '''generate tree by list or range(n)'''
@@ -17,9 +16,7 @@ def generate_nodes(n: Union[int,list]):
     return lns[0]
 
 def print_nodes(head:ListNode):
-    while head:
-        print(f'{head=}')
-        head = head.next
+    print(list(linked_to_list(head)))
 
 def linked_to_list(node:ListNode):
     while node:
@@ -73,8 +70,6 @@ def print_tree(root:Node):
             t['children'].append(traverse(root.right))
         return t
     res = traverse(root)
-    from rich import print
-    print(res)
     return res
 
 def generate_echarts_data(root:Node):
