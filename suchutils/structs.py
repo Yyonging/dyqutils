@@ -51,9 +51,9 @@ def generate_tree(n:list):
     '''通过数组生成一颗二叉树'''
     nodes = [Node(i) for i in n]
     for i, _ in enumerate(nodes):
-        if 2*i+1 < len(nodes):
+        if 2*i+1 < len(nodes) and (nodes[2*i+1].val is not None):
             nodes[i].left = nodes[2*i+1]
-        if 2*i+2 < len(nodes):
+        if 2*i+2 < len(nodes) and (nodes[2*i+2].val is not None):
             nodes[i].right = nodes[2*i+2]
     return nodes[0]
 
@@ -70,6 +70,7 @@ def print_tree(root:Node):
             t['children'].append(traverse(root.right))
         return t
     res = traverse(root)
+    print(res)
     return res
 
 def generate_echarts_data(root:Node):
@@ -112,4 +113,5 @@ if __name__ == "__main__":
     root = generate_tree([1,2,3,4,5,6])
     print_tree(root)
     root = generate_tree([1,2,3,4,5,6,7,8,9,10,11,None,13,14,15])
+    print_tree(root)
     tree_render([root])
